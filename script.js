@@ -47,20 +47,20 @@ let listMaker = (inList, outList) => {
 listMaker(adjectives, randomAdjList);
 listMaker(petList, randompetList);
 
-let listCombiner = (firstList, secondList) => {
-  if (firstList.length <= secondList.length) {
-    randomCombined.push(
-      firstList.map((item, index) => item + " " + secondList[index])
-    );
-  } else {
-    randomCombined.push(
-      secondList.map((item, index) => firstList[index] + " " + item)
-    );
+let listCombiner = () => {
+  for (let i = 0; i < randomAdjList.length && i < randompetList.length; i++) {
+    randomCombined.push(randomAdjList[i] + " " + randompetList[i]);
   }
 };
-listCombiner(randomAdjList, randompetList);
 
-console.log(randomAdjList);
-console.log(randompetList);
-console.log(randomCombined);
-console.log(numberGenerator);
+listCombiner();
+
+class Pet {
+  constructor(name) {
+    this.name = name;
+  }
+}
+
+let aPet = new Pet(randomCombined[0]);
+
+console.log(randomCombined[0]);
