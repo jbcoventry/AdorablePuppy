@@ -32,11 +32,12 @@ const adjectives = [
 let randomAdjList = [];
 let randompetList = [];
 let randomCombined = [];
+let pets = {};
 
 let picker = (array) =>
   array.splice(Math.floor(Math.random() * array.length), 1);
 
-let numberGenerator = () => Math.floor(Math.random() * (30 - 10 + 1) + 10);
+let numberGenerator = () => Math.floor(Math.random() * (10 - 3 + 1) + 3);
 
 let listMaker = (inList, outList) => {
   while (inList.length) {
@@ -58,9 +59,22 @@ listCombiner();
 class Pet {
   constructor(name) {
     this.name = name;
+    this.feedNeed = numberGenerator();
+    this.cleanNeed = numberGenerator();
+    this.petNeed = numberGenerator();
+    this.trainNeed = numberGenerator();
+    this.feedCount = this.feedNeed;
+    this.cleanCount = this.cleanNeed;
+    this.petCount = this.petNeed;
+    this.trainCount = this.feedNeed;
   }
 }
 
-let aPet = new Pet(randomCombined[0]);
+pets[1] = new Pet("Adorable Puppy");
 
-console.log(randomCombined[0]);
+for (let i = 2; i < 10; i++) {
+  pets[i] = new Pet(randomCombined[i]);
+}
+
+let start = () => console.log(pets);
+startButton.addEventListener("click", start);
