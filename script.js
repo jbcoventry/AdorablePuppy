@@ -76,5 +76,15 @@ for (let i = 2; i < 10; i++) {
   pets[i] = new Pet(randomCombined[i]);
 }
 
-let start = () => console.log(pets);
+let counter = 1;
+let start = () => {
+  let petBox = document.createElement("div");
+  petBox.className = "petgetter";
+  petBox.innerHTML = Object.entries(pets[counter]);
+  document.body.append(petBox);
+  counter++;
+};
+
 startButton.addEventListener("click", start);
+
+document.body.style.overflow = "hidden";
