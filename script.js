@@ -78,13 +78,15 @@ for (let i = 2; i < 10; i++) {
 
 let counter = 1;
 let start = () => {
-  let petBox = document.createElement("div");
-  petBox.className = "petgetter";
-  petBox.innerHTML = Object.entries(pets[counter]);
-  document.body.append(petBox);
+  let petGetter = document.createElement("div");
+  petGetter.className = "petBox";
+  petGetter.innerHTML = Object.entries(pets[counter]);
+
+  document.body.append(petGetter);
   counter++;
+  if (counter > 5) {
+    startButton.remove();
+  }
 };
 
 startButton.addEventListener("click", start);
-
-document.body.style.overflow = "hidden";
