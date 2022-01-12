@@ -84,9 +84,9 @@ let start = () => {
 
   document.body.append(petGetter);
   counter++;
-  if (counter > 5) {
-    startButton.remove();
-  }
 };
 
-startButton.addEventListener("click", start);
+let timedRelease = () => setInterval(start, 2000);
+
+startButton.addEventListener("click", timedRelease);
+startButton.addEventListener("click", startButton.remove);

@@ -5,7 +5,7 @@ html {
 body {
   background-color: rgb(255, 255, 255);
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: 300px repeat(5, 1fr) 300px;
   grid-template-rows: 30px repeat(6, 1fr);
   grid-gap: 5px;
   height: 100%;
@@ -17,7 +17,7 @@ body {
   border: 1px solid #000000;
   margin: 0;
   padding: 10%;
-  grid-column: auto;
+  grid-column: 2;
   grid-row: 4/6;
   align-self: center;
   justify-self: center;
