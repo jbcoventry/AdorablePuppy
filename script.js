@@ -86,7 +86,7 @@ let start = () => {
   counter++;
 };
 
-let timedRelease = () => setInterval(start, 2000);
+let timedRelease = () => setInterval(start, 300);
 
 startButton.addEventListener("click", timedRelease);
 startButton.addEventListener("click", startButton.remove);
