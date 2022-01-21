@@ -82,7 +82,7 @@ let start = () => {
   petGetter.className = "petBox";
   petGetter.innerHTML = pets[counter].name;
 
-  document.body.append(petGetter);
+  petpen.append(petGetter);
   counter++;
 };
 
