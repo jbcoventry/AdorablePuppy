@@ -1,5 +1,30 @@
 "use strict";
 
+let barAnimator = (parentDiv, childDiv, statMax) => {
+  let parent = document.getElementById(parentDiv);
+  let parentStyle = getComputedStyle(parent);
+  let parentWidth = parseInt(parentStyle.width);
+  const parentWidthPercent = parentWidth / 100;
+  let child = document.getElementById(childDiv);
+  let reducedBy = 0;
+
+  let barReducer = () => {
+    if (parentWidth > reducedBy) {
+      child.style.width = parentWidth - reducedBy + "px";
+      reducedBy += parentWidthPercent / statMax;
+    } else {
+      child.style.width = 0;
+    }
+  };
+
+  let reduceRepeater = setInterval(barReducer, 10);
+
+  parent.onclick = () => {
+    child.style.width = parentWidth + "px";
+    reducedBy = 0;
+  };
+};
+
 const petList = [
   "Kitten",
   "Whale",
@@ -72,7 +97,7 @@ class Pet {
 
 pets[1] = new Pet("Adorable Puppy");
 
-for (let i = 2; i < 10; i++) {
+for (let i = 2; i < 6; i++) {
   pets[i] = new Pet(randomCombined[i]);
 }
 
@@ -80,13 +105,17 @@ let counter = 1;
 let start = () => {
   let petGetter = document.createElement("div");
   petGetter.className = "petBox";
+  petGetter.id = "petBox"+counter;
   petGetter.innerHTML = pets[counter].name;
+  let statBar = document.createElement("div");
+  statBar.className = "barParent";
+  // petBox1.append(statBar);
 
   petpen.append(petGetter);
   counter++;
 };
 
-let timedRelease = () => setInterval(start, 300);
+let timedRelease = () => setInterval(start, 10);
 
 startButton.addEventListener("click", timedRelease);
 startButton.addEventListener("click", startButton.remove);

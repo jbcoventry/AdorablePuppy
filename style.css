@@ -11,7 +11,7 @@ body {
   grid-template-columns: 1fr 800px 1fr;
   grid-template-rows: 1fr 400px 1fr;
   place-items: center center;
-  width: 100vw;
+  width: 100%;
   height: 100vh;
   color: #1b1b1b;
   font-weight: bold;
@@ -21,17 +21,15 @@ body {
   padding: 10%;
   grid-column: auto;
   grid-row: 1;
-  align-self: center;
-  justify-self: center;
 }
 #petpen{
   grid-column:2/3;
   grid-row:2/3;
   place-self: stretch stretch;
   display: grid;
-  grid-template-columns: repeat (5, 150px);
+  grid-template-columns: repeat (6, 1fr);
   grid-template-rows: 1fr;
-  grid-gap: 20px;
+  grid-gap: 5px;
 
 }
 #startButton {
@@ -43,6 +41,18 @@ body {
   background-color: unset;
   color: #1b1b1b;
   font-weight: bold;
+}
+
+#barParent{
+  grid-row: 1;
+  grid-column: 2;
+  border: black 1px solid;
+  height: 40px;
+}
+#barChild {
+  background: black;
+  width: 100%;
+  height: 40px;
 }
 
 @media (prefers-color-scheme: dark) {
