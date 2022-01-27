@@ -103,15 +103,21 @@ for (let i = 2; i < 6; i++) {
 
 let counter = 1;
 let start = () => {
-  let petGetter = document.createElement("div");
-  petGetter.className = "petBox";
-  petGetter.id = "petBox"+counter;
-  petGetter.innerHTML = pets[counter].name;
-  let statBar = document.createElement("div");
-  statBar.className = "barParent";
-  // petBox1.append(statBar);
+  let petDivVariable = document.createElement("div");
+  petDivVariable.className = "petDiv";
+  petDivVariable.id = "petDiv"+counter;
+  petDivVariable.innerHTML = pets[counter].name;
+  let statBarParent = document.createElement("div");
+  statBarParent.className = "barParent";
+  statBarParent.id = "statBarParent"+counter;
+  petDivVariable.append(statBarParent);
+  let statBarChild = document.createElement("div");
+  statBarChild.className = "barChild";
+  statBarChild.id = "statBarChild"+counter;
+  statBarParent.append(statBarChild);
 
-  petpen.append(petGetter);
+
+  document.getElementById("petPen").append(petDivVariable);
   counter++;
 };
 
@@ -119,3 +125,5 @@ let timedRelease = () => setInterval(start, 10);
 
 startButton.addEventListener("click", timedRelease);
 startButton.addEventListener("click", startButton.remove);
+
+barAnimator("statBarParent"+counter, "statBarChild"+counter);
