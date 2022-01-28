@@ -11,15 +11,18 @@ let barAnimator = (parentDiv, childDiv, statMax) => {
   let barReducer = () => {
     if (parentWidth > reducedBy) {
       child.style.width = parentWidth - reducedBy + "px";
-      reducedBy += parentWidthPercent / statMax;
+      reducedBy += parentWidthPercent/ statMax;
     } else {
       child.style.width = 0;
+      clearInterval(reduceRepeater);
     }
   };
 
   let reduceRepeater = setInterval(barReducer, 10);
 
   parent.onclick = () => {
+    clearInterval(reduceRepeater);
+    reduceRepeater = setInterval(barReducer, 10);
     child.style.width = parentWidth + "px";
     reducedBy = 0;
   };
@@ -105,25 +108,28 @@ let counter = 1;
 let start = () => {
   let petDivVariable = document.createElement("div");
   petDivVariable.className = "petDiv";
-  petDivVariable.id = "petDiv"+counter;
+  petDivVariable.id = "petDiv" + counter;
   petDivVariable.innerHTML = pets[counter].name;
   let statBarParent = document.createElement("div");
   statBarParent.className = "barParent";
-  statBarParent.id = "statBarParent"+counter;
+  statBarParent.id = "statBarParent" + counter;
   petDivVariable.append(statBarParent);
   let statBarChild = document.createElement("div");
   statBarChild.className = "barChild";
-  statBarChild.id = "statBarChild"+counter;
+  statBarChild.id = "statBarChild" + counter;
   statBarParent.append(statBarChild);
-
-
   document.getElementById("petPen").append(petDivVariable);
+  barAnimator("statBarParent"+counter,"statBarChild"+counter,pets[counter].feedNeed);
+  console.log(pets[1].feedNeed);
   counter++;
+  if (counter > 5) {
+    clearInterval(intervalVariable);
+  }
 };
 
-let timedRelease = () => setInterval(start, 10);
+let intervalVariable;
+let timedRelease = () => (intervalVariable = setInterval(start, 10));
 
 startButton.addEventListener("click", timedRelease);
 startButton.addEventListener("click", startButton.remove);
 
-barAnimator("statBarParent"+counter, "statBarChild"+counter);
