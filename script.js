@@ -27,7 +27,16 @@ let barAnimator = (parentDiv, childDiv, statMax) => {
     reducedBy = 0;
   };
 };
-
+let barMaker = (stat) => {
+  let statBarParent = document.createElement("div");
+  statBarParent.className = "barParent";
+  statBarParent.id = "statBarParent"+stat+counter;
+  document.getElementById("petDiv"+counter).append(statBarParent);
+  let statBarChild = document.createElement("div");
+  statBarChild.className = "barChild";
+  statBarChild.id = "statBarChild" + stat+ counter;
+  statBarParent.append(statBarChild);
+  }
 const petList = [
   "Kitten",
   "Whale",
@@ -110,17 +119,16 @@ let start = () => {
   petDivVariable.className = "petDiv";
   petDivVariable.id = "petDiv" + counter;
   petDivVariable.innerHTML = pets[counter].name;
-  let statBarParent = document.createElement("div");
-  statBarParent.className = "barParent";
-  statBarParent.id = "statBarParent" + counter;
-  petDivVariable.append(statBarParent);
-  let statBarChild = document.createElement("div");
-  statBarChild.className = "barChild";
-  statBarChild.id = "statBarChild" + counter;
-  statBarParent.append(statBarChild);
   document.getElementById("petPen").append(petDivVariable);
-  barAnimator("statBarParent"+counter,"statBarChild"+counter,pets[counter].feedNeed);
-  console.log(pets[1].feedNeed);
+  barMaker("Feed");
+  barAnimator("statBarParentFeed"+counter,"statBarChildFeed"+counter,pets[counter].feedNeed);
+  barMaker("Clean");
+  barAnimator("statBarParentClean"+counter,"statBarChildClean"+counter,pets[counter].cleanNeed);
+  barMaker("Pet");
+  barAnimator("statBarParentPet"+counter,"statBarChildPet"+counter,pets[counter].petNeed);
+  barMaker("Train");
+  barAnimator("statBarParentTrain"+counter,"statBarChildTrain"+counter,pets[counter].trainNeed);
+
   counter++;
   if (counter > 5) {
     clearInterval(intervalVariable);
@@ -128,7 +136,7 @@ let start = () => {
 };
 
 let intervalVariable;
-let timedRelease = () => (intervalVariable = setInterval(start, 10));
+let timedRelease = () => (intervalVariable = setInterval(start, 2000));
 
 startButton.addEventListener("click", timedRelease);
 startButton.addEventListener("click", startButton.remove);

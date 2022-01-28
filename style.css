@@ -1,5 +1,8 @@
 html {
   box-sizing: border-box;
+  --dayColor: #222222;
+  --nightColor: rgb(104, 104, 104);
+  --nightBackground: rgb(31, 31, 27);
 }
 *,
 *:before,
@@ -13,21 +16,23 @@ body {
   place-items: center center;
   width: 100%;
   height: 100vh;
-  color: #1b1b1b;
+  color: #222222;
   font-weight: bold;
 }
 .petDiv {
-  border: 3px solid #1b1b1b;
-  padding: 10%;
+  border: 3px solid var(--dayColor);
+  padding: 5%;
+  /* max-width: ; */
   grid-column: auto;
   grid-row: 1;
 }
 #petPen{
   grid-column:2/3;
   grid-row:2/3;
-  place-self: stretch stretch;
+  justify-self: left;
+  width: 100%;
   display: grid;
-  grid-template-columns: repeat (6, 1fr);
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
   grid-template-rows: 1fr;
   grid-gap: 5px;
 
@@ -37,7 +42,7 @@ body {
   grid-row: 1;
   place-items: center center;
   padding: 20px;
-  border: 3px solid #1b1b1b;
+  border: 3px solid var(--dayColor);
   background-color: unset;
   color: #1b1b1b;
   font-weight: bold;
@@ -46,26 +51,33 @@ body {
 .barParent{
   grid-row: 1;
   grid-column: 2;
-  border: #1b1b1b 1px solid;
+  border: var(--dayColor) 1px solid;
   width: 100%;
   height: 40px;
+  margin:5px;
 }
 .barChild {
-  background: #1b1b1b;
+  background: var(--dayColor);
   width: 70%;
   height: 40px;
 }
 
 @media (prefers-color-scheme: dark) {
   body {
-    background: rgb(31, 31, 27);
-    color: rgb(104, 104, 104);
+    background: var(--nightBackground);
+    color: var(--nightColor);
   }
   .petDiv {
-    border-color: rgb(104, 104, 104);
+    border-color: var(--nightColor);
   }
   #startButton {
-    border-color: rgb(104, 104, 104);
-    color: rgb(104, 104, 104);
+    border-color: var(--nightColor);
+    color: var(--nightColor);
+  }
+  .barParent{
+    border-color: var(--nightColor);
+  }
+  .barChild{
+    background: var(--nightColor);
   }
 }
