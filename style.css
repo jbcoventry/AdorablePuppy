@@ -1,6 +1,6 @@
 html {
     box-sizing: border-box;
-    --contentColor: #222222;
+    --contentColor: blue;
     --backgroundColor: rgb(255, 255, 255);
     background-color: var(--backgroundColor);
 }

@@ -33,7 +33,6 @@ const adjectives = [
     "Adorable",
 ];
 
-
 const randomNumberBetween = (min, max) => {
     return Math.floor(Math.random() * (max - min + 1) + min);
 };
@@ -44,6 +43,10 @@ const createPetValues = (petName) => {
         traitClean: randomNumberBetween(minPossibleTraitValue, maxPossibleTraitValue),
         traitPlay: randomNumberBetween(minPossibleTraitValue, maxPossibleTraitValue),
         traitTrain: randomNumberBetween(minPossibleTraitValue, maxPossibleTraitValue),
+        traitFeedLast: null,
+        traitCleanLast: null,
+        traitPlayLast: null,
+        traitTrainLast: null,
     };
 };
 
@@ -66,12 +69,12 @@ const petsMaker = (adjectives, animals) => {
 };
 
 const pets = petsMaker(adjectives, animals);
-const petDivMaker = (petsList, petsListPosition) =>{
+const petDivMaker = (petsList, petsListPosition) => {
     const petDiv = document.createElement("div");
-    petDiv.className = "pet-div"
+    petDiv.className = "pet-div";
     petDiv.id = `pet-div-${petsListPosition}`;
     const petHeading = document.createElement("div");
-    petHeading.className = "pet-heading"
+    petHeading.className = "pet-heading";
     petHeading.id = `pet-heading-${petsListPosition}`;
     petHeading.textContent = `${petsList[petsListPosition].name}`;
     petDiv.append(petHeading);
@@ -80,7 +83,7 @@ const petDivMaker = (petsList, petsListPosition) =>{
     petDiv.append(traitBarMaker("play", petsListPosition));
     petDiv.append(traitBarMaker("train", petsListPosition));
     return petDiv;
-}
+};
 const traitBarMaker = (trait, petsListPosition) => {
     const traitBarOuter = document.createElement("div");
     traitBarOuter.className = "trait-bar-outer";
@@ -93,9 +96,14 @@ const traitBarMaker = (trait, petsListPosition) => {
 };
 
 const barAnimator = (durationInMS, progressBarInnerDivID) => {
+    const innerDiv = document.getElementById(progressBarInnerDivID);
     let starttime = null;
-    const maxWidth = document.getElementById(`${progressBarInnerDivID}`).parentElement.clientWidth;
+    const maxWidth = innerDiv.parentElement.clientWidth;
+    innerDiv.parentElement.addEventListener("click", (event) => {
+        innerDiv.style.width = `${maxWidth}px`;
+        starttime = null;
 
+    });
     function animate(timestamp) {
         if (!starttime) {
             starttime = timestamp;
@@ -104,12 +112,11 @@ const barAnimator = (durationInMS, progressBarInnerDivID) => {
         const runtime = timestamp - starttime;
         const relativeProgress = runtime / durationInMS;
 
-        document.getElementById(`${progressBarInnerDivID}`).style.width = `${
-            maxWidth - maxWidth * relativeProgress
-        }px`;
-        if (runtime < durationInMS) {
-            requestAnimationFrame(animate);
+        innerDiv.style.width = `${maxWidth - maxWidth * relativeProgress}px`;
+        if (innerDiv.clientWidth < 1){
+            innerDiv.style.width = "0px";
         }
+        requestAnimationFrame(animate);
     }
 
     requestAnimationFrame(animate);
@@ -117,23 +124,17 @@ const barAnimator = (durationInMS, progressBarInnerDivID) => {
 
 const newPetToDOM = () => {
     const totalPets = document.getElementById("pet-pen").childElementCount;
-    document.getElementById("pet-pen").append(petDivMaker(pets,totalPets));
-    barAnimator(pets[totalPets].traitFeed,`trait-bar-inner-feed-${totalPets}`);
-    barAnimator(pets[totalPets].traitClean,`trait-bar-inner-clean-${totalPets}`);
-    barAnimator(pets[totalPets].traitPlay,`trait-bar-inner-play-${totalPets}`);
-    barAnimator(pets[totalPets].traitTrain,`trait-bar-inner-train-${totalPets}`);
+    document.getElementById("pet-pen").append(petDivMaker(pets, totalPets));
+    barAnimator(pets[totalPets].traitFeed, `trait-bar-inner-feed-${totalPets}`);
+    barAnimator(pets[totalPets].traitClean, `trait-bar-inner-clean-${totalPets}`);
+    barAnimator(pets[totalPets].traitPlay, `trait-bar-inner-play-${totalPets}`);
+    barAnimator(pets[totalPets].traitTrain, `trait-bar-inner-train-${totalPets}`);
     setTimeout(newPetToDOM, newPetRate);
-}
+};
 
-document.addEventListener("click", (event) =>{
- if (event.target.matches("#start-button")){
-    newPetToDOM();
-    event.target.remove();
- }
- if (event.target.matches(".trait-bar-outer")){
-    event.target.firstChild.style.width = "100%";
- }
- if (event.target.matches(".trait-bar-inner")){
-    event.target.style.width = "100%";
- }
-})
+document.addEventListener("click", (event) => {
+    if (event.target.matches("#start-button")) {
+        newPetToDOM();
+        event.target.remove();
+    }
+});
