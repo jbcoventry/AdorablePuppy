@@ -1,8 +1,10 @@
 "use strict";
 const minPossibleTraitValue = 5000;
 const maxPossibleTraitValue = 20000;
-const newPetRate = 10000;
-const animals = [
+const newPetRate = 1000000000;
+const loseConditionDeathCount = 100;
+const acceptableClickThreshold = 2500;
+const animalList = [
     "Kitten",
     "Whale",
     "Tarantula",
@@ -16,7 +18,7 @@ const animals = [
     "Capybara",
     "Puppy",
 ];
-const adjectives = [
+const adjectiveList = [
     "Fetching",
     "Cute",
     "Goofy",
@@ -33,20 +35,29 @@ const adjectives = [
     "Adorable",
 ];
 
-const randomNumberBetween = (min, max) => {
+const createRandomNumberBetween = (min, max) => {
     return Math.floor(Math.random() * (max - min + 1) + min);
 };
-const createPetValues = (petName) => {
+const createPetProperties = (petName) => {
     return {
         name: petName,
-        traitFeed: randomNumberBetween(minPossibleTraitValue, maxPossibleTraitValue),
-        traitClean: randomNumberBetween(minPossibleTraitValue, maxPossibleTraitValue),
-        traitPlay: randomNumberBetween(minPossibleTraitValue, maxPossibleTraitValue),
-        traitTrain: randomNumberBetween(minPossibleTraitValue, maxPossibleTraitValue),
-        traitFeedLast: null,
-        traitCleanLast: null,
-        traitPlayLast: null,
-        traitTrainLast: null,
+        traitFeed: createRandomNumberBetween(
+            minPossibleTraitValue,
+            maxPossibleTraitValue
+        ),
+        traitClean: createRandomNumberBetween(
+            minPossibleTraitValue,
+            maxPossibleTraitValue
+        ),
+        traitPlay: createRandomNumberBetween(
+            minPossibleTraitValue,
+            maxPossibleTraitValue
+        ),
+        traitTrain: createRandomNumberBetween(
+            minPossibleTraitValue,
+            maxPossibleTraitValue
+        ),
+        deathReason: null,
     };
 };
 
@@ -56,85 +67,119 @@ const shuffleArray = (toBeShuffled) =>
         .sort((a, b) => a.sort - b.sort)
         .map(({ value }) => value);
 
-const adjectiveAnimalCombiner = (adjectives, animals) => {
-    return adjectives.slice(0, animals.length).map(function (value, index) {
-        return value + " " + animals[index];
+const combineAnimalListAndAdjectiveList = (adjectiveList, animalList) => {
+    return adjectiveList.slice(0, animalList.length).map(function (value, index) {
+        return value + " " + animalList[index];
     });
 };
 
-const petsMaker = (adjectives, animals) => {
-    return adjectiveAnimalCombiner(shuffleArray(adjectives), shuffleArray(animals)).map(
-        createPetValues
-    );
+const createPetObjects = (adjectiveList, animalList) => {
+    return combineAnimalListAndAdjectiveList(
+        shuffleArray(adjectiveList),
+        shuffleArray(animalList)
+    ).map(createPetProperties);
 };
 
-const pets = petsMaker(adjectives, animals);
-const petDivMaker = (petsList, petsListPosition) => {
+const petArray = createPetObjects(adjectiveList, animalList);
+const createPetDiv = (petIndex) => {
     const petDiv = document.createElement("div");
     petDiv.className = "pet-div";
-    petDiv.id = `pet-div-${petsListPosition}`;
+    petDiv.id = `pet-div-${petIndex}`;
+    petDiv.dataset.petIndex = petIndex;
     const petHeading = document.createElement("div");
     petHeading.className = "pet-heading";
-    petHeading.id = `pet-heading-${petsListPosition}`;
-    petHeading.textContent = `${petsList[petsListPosition].name}`;
+    petHeading.id = `pet-heading-${petIndex}`;
+    petHeading.textContent = `${petArray[petIndex].name}`;
     petDiv.append(petHeading);
-    petDiv.append(traitBarMaker("feed", petsListPosition));
-    petDiv.append(traitBarMaker("clean", petsListPosition));
-    petDiv.append(traitBarMaker("play", petsListPosition));
-    petDiv.append(traitBarMaker("train", petsListPosition));
+    petDiv.append(createTraitBar("feed", petIndex));
+    petDiv.append(createTraitBar("clean", petIndex));
+    petDiv.append(createTraitBar("play", petIndex));
+    petDiv.append(createTraitBar("train", petIndex));
     return petDiv;
 };
-const traitBarMaker = (trait, petsListPosition) => {
+const createTraitBar = (trait, petIndex) => {
     const traitBarOuter = document.createElement("div");
     traitBarOuter.className = "trait-bar-outer";
-    traitBarOuter.id = `trait-bar-outer-${trait}-${petsListPosition}`;
+    traitBarOuter.id = `trait-bar-outer-${trait}-${petIndex}`;
     const traitBarInner = document.createElement("div");
     traitBarInner.className = "trait-bar-inner";
-    traitBarInner.id = `trait-bar-inner-${trait}-${petsListPosition}`;
+    traitBarInner.id = `trait-bar-inner-${trait}-${petIndex}`;
+    traitBarInner.dataset.trait = trait;
     traitBarOuter.append(traitBarInner);
     return traitBarOuter;
 };
 
-const barAnimator = (durationInMS, progressBarInnerDivID) => {
-    const innerDiv = document.getElementById(progressBarInnerDivID);
-    let starttime = null;
-    const maxWidth = innerDiv.parentElement.clientWidth;
-    innerDiv.parentElement.addEventListener("click", (event) => {
-        innerDiv.style.width = `${maxWidth}px`;
-        starttime = null;
+const endTheGame = () => {
+    console.log("game over");
+};
 
+const killPet = (petDiv, petObject, deathReason) => {
+    petDiv.style.backgroundColor = "red";
+    // petDiv.classList.add("dead");
+    // petObject.deathReason = deathReason;
+    // if (document.querySelectorAll(".dead").length >= loseConditionDeathCount)
+    //     endTheGame();
+};
+const animateTraitBar = (trait, petIndex) => {
+    const innerBarDiv = document.getElementById(`trait-bar-inner-${trait}-${petIndex}`);
+    const outerBarDiv = document.getElementById(`trait-bar-outer-${trait}-${petIndex}`);
+    const petDiv = document.getElementById(`pet-div-${petIndex}`);
+    const petObject = petArray[petIndex];
+    const objectTraitName = `trait${trait[0].toUpperCase()}${trait.substring(1)}`;
+    const test = "traitClean"
+    const timeToTake = petObject[objectTraitName];
+    let starttime = null;
+    let currentRuntime = 0;
+    const maxWidth = outerBarDiv.clientWidth;
+
+    outerBarDiv.addEventListener("click", (event) => {
+        if (checkIfUnderTime(currentRuntime, timeToTake))
+            killPet(petDiv, petObject, `toomuch${trait}`);
+        innerBarDiv.style.width = `${maxWidth}px`;
+        innerBarDiv.style.backgroundColor = "blue";
+        starttime = null;
     });
     function animate(timestamp) {
         if (!starttime) {
             starttime = timestamp;
         }
 
-        const runtime = timestamp - starttime;
-        const relativeProgress = runtime / durationInMS;
-
-        innerDiv.style.width = `${maxWidth - maxWidth * relativeProgress}px`;
-        if (innerDiv.clientWidth < 1){
-            innerDiv.style.width = "0px";
+        currentRuntime = timestamp - starttime;
+        const relativeProgress = currentRuntime / timeToTake;
+        
+        innerBarDiv.style.width = `${maxWidth - maxWidth * relativeProgress}px`;
+        if (innerBarDiv.clientWidth < 1) {
+            innerBarDiv.style.width = "0px";
         }
-        requestAnimationFrame(animate);
-    }
+        if (timeToTake - currentRuntime <= acceptableClickThreshold) {
+            innerBarDiv.style.backgroundColor = "green";
+        }
+        if (checkIfOverTime(currentRuntime, timeToTake))
+            killPet(petDiv, petObject, `toolittle${trait}`);
 
+        if (!petObject.deathReason) requestAnimationFrame(animate);
+    }
     requestAnimationFrame(animate);
 };
-
-const newPetToDOM = () => {
-    const totalPets = document.getElementById("pet-pen").childElementCount;
-    document.getElementById("pet-pen").append(petDivMaker(pets, totalPets));
-    barAnimator(pets[totalPets].traitFeed, `trait-bar-inner-feed-${totalPets}`);
-    barAnimator(pets[totalPets].traitClean, `trait-bar-inner-clean-${totalPets}`);
-    barAnimator(pets[totalPets].traitPlay, `trait-bar-inner-play-${totalPets}`);
-    barAnimator(pets[totalPets].traitTrain, `trait-bar-inner-train-${totalPets}`);
-    setTimeout(newPetToDOM, newPetRate);
+const checkIfOverTime = (currentRuntime, timeToTake) => {
+    return currentRuntime - acceptableClickThreshold > timeToTake ? true : false;
+};
+const checkIfUnderTime = (currentRuntime, timeToTake) => {
+    return timeToTake - currentRuntime > acceptableClickThreshold ? true : false;
+};
+const sendNewPetToDOM = () => {
+    const totalCurrentPets = document.getElementById("pet-pen").childElementCount;
+    document.getElementById("pet-pen").append(createPetDiv(totalCurrentPets));
+    animateTraitBar("feed", totalCurrentPets);
+    animateTraitBar("clean", totalCurrentPets);
+    animateTraitBar("play", totalCurrentPets);
+    animateTraitBar("train", totalCurrentPets);
+    if (totalCurrentPets < petArray.length - 1) setTimeout(sendNewPetToDOM, newPetRate);
 };
 
 document.addEventListener("click", (event) => {
     if (event.target.matches("#start-button")) {
-        newPetToDOM();
+        sendNewPetToDOM();
         event.target.remove();
     }
 });

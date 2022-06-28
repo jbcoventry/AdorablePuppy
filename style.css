@@ -63,3 +63,6 @@ body {
 .pet-heading {
     min-height: 2.5em;
 }
+.dead {
+    display:none;
+}
