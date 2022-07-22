@@ -60,8 +60,7 @@ body {
     min-height: 2.5em;
 }
 .dead {
-    /* display: none; */
-    background-color: red;
+    display: none;
 }
 .green {
     background-color: green;

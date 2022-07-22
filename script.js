@@ -3,7 +3,7 @@ const log = console.log;
 const MINIMUM_TRAIT_VALUE = 5000;
 const MAXIMUM_TRAIT_VALUE = 20000;
 const NEW_PET_RATE = 5000;
-const LOSE_CONDITION_DEATH_AMOUNT = 1;
+const LOSE_CONDITION_DEATH_AMOUNT = 3;
 const WIN_CONDITION_PET_COUNT = 4;
 const ACCEPTABLE_CLICK_THRESHOLD = 2500;
 const ANIMAL_LIST = [
@@ -38,16 +38,16 @@ const ADJECTIVE_LIST = [
 ];
 const TRAIT_LIST = ["feed", "clean", "play", "train"];
 
-const returnRandomNumberBetween = (min, max) => {
+const randomNumberBetween = (min, max) => {
     return Math.floor(Math.random() * (max - min + 1) + min);
 };
-const returnPetProperties = (petName) => {
+const petProperties = (petName) => {
     return {
         name: petName,
-        feedTrait: returnRandomNumberBetween(MINIMUM_TRAIT_VALUE, MAXIMUM_TRAIT_VALUE),
-        cleanTrait: returnRandomNumberBetween(MINIMUM_TRAIT_VALUE, MAXIMUM_TRAIT_VALUE),
-        playTrait: returnRandomNumberBetween(MINIMUM_TRAIT_VALUE, MAXIMUM_TRAIT_VALUE),
-        trainTrait: returnRandomNumberBetween(MINIMUM_TRAIT_VALUE, MAXIMUM_TRAIT_VALUE),
+        feedTrait: randomNumberBetween(MINIMUM_TRAIT_VALUE, MAXIMUM_TRAIT_VALUE),
+        cleanTrait: randomNumberBetween(MINIMUM_TRAIT_VALUE, MAXIMUM_TRAIT_VALUE),
+        playTrait: randomNumberBetween(MINIMUM_TRAIT_VALUE, MAXIMUM_TRAIT_VALUE),
+        trainTrait: randomNumberBetween(MINIMUM_TRAIT_VALUE, MAXIMUM_TRAIT_VALUE),
         feedStart: null,
         cleanStart: null,
         playStart: null,
@@ -60,28 +60,27 @@ const returnPetProperties = (petName) => {
     };
 };
 
-const returnShuffledArray = (toBeShuffled) => {
+const shuffledArray = (toBeShuffled) => {
     return toBeShuffled
         .map((value) => ({ value, sort: Math.random() }))
         .sort((a, b) => a.sort - b.sort)
         .map(({ value }) => value);
 };
 
-const returnCombinedLists = (adjectiveList, animalList) => {
-    return adjectiveList.slice(0, animalList.length).map(function (value, index) {
-        return value + " " + animalList[index];
+const combinedLists = (adjectiveArray, animalArray) => {
+    return adjectiveArray.slice(0, animalArray.length).map(function (value, index) {
+        return value + " " + animalArray[index];
     });
 };
 
-const returnPetObjects = (adjectiveList, animalList) => {
-    return returnCombinedLists(
-        returnShuffledArray(adjectiveList),
-        returnShuffledArray(animalList)
-    ).map(returnPetProperties);
+const petObjects = (adjectiveArray, animalArray) => {
+    return combinedLists(shuffledArray(adjectiveArray), shuffledArray(animalArray)).map(
+        petProperties
+    );
 };
 
-const PET_ARRAY = returnPetObjects(ADJECTIVE_LIST, ANIMAL_LIST);
-const returnPetDiv = (petIndex) => {
+const PET_ARRAY = petObjects(ADJECTIVE_LIST, ANIMAL_LIST);
+const petDiv = (petIndex) => {
     const petDiv = document.createElement("div");
     const petHeading = document.createElement("div");
     petDiv.id = `pet-div-${petIndex}`;
@@ -91,10 +90,10 @@ const returnPetDiv = (petIndex) => {
     petDiv.dataset.petIndex = petIndex;
     petHeading.textContent = `${PET_ARRAY[petIndex].name}`;
     petDiv.append(petHeading);
-    TRAIT_LIST.forEach((trait) => petDiv.append(returnTraitBar(trait, petIndex)));
+    TRAIT_LIST.forEach((trait) => petDiv.append(traitBarDiv(trait, petIndex)));
     return petDiv;
 };
-const returnTraitBar = (trait, petIndex) => {
+const traitBarDiv = (trait, petIndex) => {
     const traitBarOuter = document.createElement("div");
     traitBarOuter.className = "trait-bar-outer";
     traitBarOuter.id = `trait-bar-outer-${trait}-${petIndex}`;
@@ -106,33 +105,67 @@ const returnTraitBar = (trait, petIndex) => {
     return traitBarOuter;
 };
 
-const endGame = (endCondition) => {
+const endTheGame = (endCondition) => {
     document.getElementById("pet-pen").style.display = "none";
     PET_ARRAY.forEach((element) => {
         if (!element.deathReason) {
             element.deathReason = "gameover";
         }
     });
-    document.body.append(returnEndGameScreen(endCondition));
+    document.body.append(endGameDiv(endCondition));
 };
-const returnEndGameScreen = (endCondition) => {
+const deathReasonText = (deathReason) => {
+    switch (deathReason) {
+        case "toomuchfeed":
+            return " was stuffed full of so much food it exploded";
+        case "toomuchclean":
+            return " was cleaned to death";
+        case "toomuchplay":
+            return " died from exhaustion after too much play";
+        case "toomuchtrain":
+            return " died (on the inside) after too much training";
+        case "toolittlefeed":
+            return " starved to death next to its empty food dish";
+        case "toolittleclean":
+            return " was so filthy it had to be put down";
+        case "toolittleplay":
+            return " died from a broken heart";
+        case "toolittletrain":
+            return " went wild and escaped in to the bush to live its best life";
+    }
+};
+const endGameDiv = (endCondition) => {
     const deadpets = PET_ARRAY.filter(
         (pet) => pet.deathReason != null && pet.deathReason != "gameover"
-    );
+    ).map((pet) => `<li>${pet.name}${deathReasonText(pet.deathReason)}</li>`).join("");
     const main = document.createElement("div");
     const heading = document.createElement("div");
     const body = document.createElement("div");
     main.id = "end-game-div";
     heading.id = "end-game-heading";
     body.id = "end-game-body";
-    if (endCondition == "win") {
+    if (endCondition == "win" && deadpets == false) {
         heading.textContent = "Congratulation!";
         body.textContent = "You kept all of your pets alive";
+        log(deadpets)
+    } else if (endCondition == "win") {
+        heading.textContent = "You finished the Game!";
+        body.innerHTML = `However...
+
+        <ul>${deadpets}</ul>
+
+        PETA has been notified`;
+        log(deadpets)
+
     } else {
         heading.textContent = "Game Over";
         body.innerHTML = `
-        You let 
-        `;
+        <ul>${deadpets}</ul>
+
+
+        PETA has been notified`;
+        log(deadpets)
+
     }
     main.append(heading);
     main.append(body);
@@ -142,9 +175,8 @@ const returnEndGameScreen = (endCondition) => {
 const killPet = (petDiv, petObject, deathReason) => {
     petDiv.classList.add("dead");
     petObject.deathReason = deathReason;
-    console.log(petObject.deathReason);
     if (document.querySelectorAll(".dead").length >= LOSE_CONDITION_DEATH_AMOUNT)
-        endGame("lose");
+        endTheGame("lose");
 };
 const animateTraitBar = (trait, petIndex) => {
     const innerBarDiv = document.getElementById(`trait-bar-inner-${trait}-${petIndex}`);
@@ -175,41 +207,34 @@ const animateTraitBar = (trait, petIndex) => {
         ) {
             innerBarDiv.classList.add("green");
         }
-        if (
-            returnIfShouldDie(
-                petObject[currentRuntime],
-                petObject[timeToTake],
-                "animation"
-            )
-        )
+        if (isDead(petObject[currentRuntime], petObject[timeToTake], "animation"))
             killPet(petDiv, petObject, `toolittle${trait}`);
 
         if (!petObject.deathReason) requestAnimationFrame(animate);
     };
     requestAnimationFrame(animate);
 };
-const returnIfShouldDie = (currentRuntime, timeToTake, source) => {
+const isDead = (currentRuntime, timeToTake, source) => {
     if (source == "animation") {
-        return currentRuntime - ACCEPTABLE_CLICK_THRESHOLD > timeToTake ? true : false;
+        return currentRuntime - ACCEPTABLE_CLICK_THRESHOLD > timeToTake;
     } else if (source == "click") {
-        return timeToTake - currentRuntime > ACCEPTABLE_CLICK_THRESHOLD ? true : false;
+        return timeToTake - currentRuntime > ACCEPTABLE_CLICK_THRESHOLD;
     }
 };
-const sendNewPetToDOM = () => {
+const renderNextPet = () => {
     const totalCurrentPets = document.querySelectorAll(".pet-div").length;
     const totalDeadPets = document.querySelectorAll(".dead").length;
     if (totalCurrentPets - totalDeadPets >= WIN_CONDITION_PET_COUNT) {
-        gameOver("win");
+        endTheGame("win");
     }
-    document.getElementById("pet-pen").append(returnPetDiv(totalCurrentPets));
+    document.getElementById("pet-pen").append(petDiv(totalCurrentPets));
     TRAIT_LIST.forEach((trait) => animateTraitBar(trait, totalCurrentPets));
-    if (totalCurrentPets < PET_ARRAY.length - 1)
-        setTimeout(sendNewPetToDOM, NEW_PET_RATE);
+    if (!document.getElementById('end-game-div')) setTimeout(renderNextPet, NEW_PET_RATE);
 };
 
 document.addEventListener("click", (event) => {
     if (event.target.matches("#start-button")) {
-        startButtonClicked(event.target);
+        startButtonClicked(event);
     }
     if (
         event.target.matches(".trait-bar-inner") ||
@@ -218,10 +243,11 @@ document.addEventListener("click", (event) => {
         traitBarClicked(event);
     }
 });
-const startButtonClicked = (button) => {
-    button.remove();
-    sendNewPetToDOM();
-    // endGame();
+const startButtonClicked = (event) => {
+    if (event.target.matches("#start-button")) {
+        event.target.remove();
+        renderNextPet();
+    }
 };
 const traitBarClicked = (event) => {
     const petDiv = event.target.matches(".trait-bar-inner")
@@ -232,8 +258,14 @@ const traitBarClicked = (event) => {
         : event.target.firstElementChild.dataset.trait;
     const petIndex = petDiv.dataset.petIndex;
     const innerDiv = document.getElementById(`trait-bar-inner-${trait}-${petIndex}`);
-    if (returnIfShouldDie(petIndex, trait, "click"))
-        killPet(petDiv, petIndex, `toomuch${trait}`);
+    if (
+        isDead(
+            PET_ARRAY[petIndex][`${trait}Current`],
+            PET_ARRAY[petIndex][`${trait}Trait`],
+            "click"
+        )
+    )
+        killPet(petDiv, PET_ARRAY[petIndex], `toomuch${trait}`);
     resetTraitBar(petIndex, trait, innerDiv);
 };
 const resetTraitBar = (petIndex, trait, innerDiv) => {
